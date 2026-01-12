@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李玫翎 (玫子) | 食農教育工作者</title>
+    
+    <!-- 1. 引入 Tailwind CSS (樣式引擎) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. 引入 Babel (讓瀏覽器即時編譯 React) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind 設定：字型與顏色擴充 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 隱藏捲軸但保留滑動功能，讓畫面更乾淨 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-orange-50 text-zinc-900 antialiased">
+    <!-- React 應用程式掛載點 -->
+    <div id="root"></div>
+
+    <!-- 3. 定義模組來源 (Import Map) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@18.2.0",
+                "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+                "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+            }
+        }
+    </script>
+
+    <!-- 4. 主要應用程式邏輯 -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Facebook, 
+            Instagram,
+            Mail, 
+            MapPin, 
+            ArrowUpRight, 
+            Copy,
+            Check,
+            UtensilsCrossed, 
+            Sprout,
+            Globe,
+            Newspaper,
+            Users,
+            Award,
+            ListChecks,
+            ChefHat,
+            Lightbulb,
+            Phone 
+        } from 'lucide-react';
+
+        const App = () => {
+            const [copied, setCopied] = useState(false);
+
+            // Google Drive 圖片處理
+            const driveImageId = "1qF6scbBwz1syMqy8hQ96P01PrgT7s_xl";
+            const avatarUrl = `https://lh3.googleusercontent.com/d/${driveImageId}`;
+
+            // 背景圖設定
+            const bgImage = "https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?q=80&w=2000&auto=format&fit=crop";
+
+            // --- 個人資料設定區 ---
+            const profile = {
+                name: "李玫翎 (玫子)",
+                role: "食農教育工作者、食育講師",
+                credentials: [
+                    "日本味育協會-食育實踐規劃師",
+                    "台灣兒童食育協會-創會理事長",
+                    "小廚師樂作坊親子料理教室-主理人",
+                    "momo親子台百味小廚神 顧問"
+                ],
+                bio: "食育，是生活最好的調味料。致力於推動親子共廚、在地食材推廣，讓孩子從餐桌開始認識世界。我是一位將食育融入生活、讓生活充滿食育的美食愛好者，目前正在尋找有趣的跨領域食育合作。",
+                location: "台灣, 台中市",
+                email: "lcfs2016@gmail.com",
+                phone: "+886 972 920 250",
+                
+                // 服務項目
+                services: [
+                    "專業講座與人才培訓",
+                    "教案設計與教具開發",
+                    "整合性跨領域食育活動企劃",
+                    "親子共廚技巧",
+                    "飲食文化餐桌"
+                ],
+                
+                // 精選案例 (純色塊模式)
+                cases: [
+                    {
+                        title: "地方飲食記憶：麻芛文化",
+                        desc: "台中限定的夏日滋味與土地記憶，透過食農教育傳承阿嬤的味道。",
+                        link: "https://www.facebook.com/twfooducation/posts/pfbid0CTuusZPujYi4GrvbzEH7j1tSMEinysZWzxenM9VipiysWvH3Z3cgN2YNCzFXiQx5l?locale=zh_TW",
+                        colorClass: "bg-green-100", 
+                    },
+                    {
+                        title: "榮獲國際大獎：石滬教具",
+                        desc: "榮獲2024美國繆思創意大獎。與慢魚海岸共同開發，將古老捕魚智慧轉化為桌遊。",
+                        link: "https://www.facebook.com/MiaoliSlowFish/posts/-%E7%9F%B3%E6%BB%AC%E6%96%87%E5%8C%96%E6%95%99%E5%85%B7%E7%8D%B2%E5%9C%8B%E9%9A%9B%E5%A4%A7%E7%8D%8E%E7%8F%BE%E6%AD%A3%E9%96%8B%E6%94%BE%E7%94%B3%E8%AB%8B%E4%B8%AD%E1%90%9F%E1%90%9F%E6%88%91%E5%80%91%E8%88%87-%E5%A5%BD%E9%A3%9F%E8%82%B2-%E5%8F%B0%E7%81%A3%E5%85%92%E7%AB%A5%E9%A3%9F%E8%82%B2%E5%8D%94%E6%9C%83-%E7%8E%AB%E5%AD%90%E8%80%81%E5%B8%AB%E5%85%B1%E5%90%8C%E9%96%8B%E7%99%BC%E6%A1%8C%E9%81%8A%E5%BC%8F%E4%BA%92%E5%8B%95%E6%95%99%E5%85%B7%E5%8F%A4%E8%80%81%E6%99%BA%E6%85%A7%E7%9F%B3%E6%BB%AC%E6%8D%95%E9%AD%9A%E6%B3%95%E6%A6%AE%E7%8D%B22024%E5%B9%B4%E7%BE%8E%E5%9C%8B%E7%B9%86%E6%80%9D%E5%89%B5%E6%84%8F%E5%A4%A7%E7%8D%8Emus/1012830417555961/",
+                        colorClass: "bg-blue-100",
+                    },
+                    {
+                        title: "台灣食育，前進日本",
+                        desc: "帶領台灣黑翅鳶農村再生案例赴日參展，展現台灣食農教育軟實力。",
+                        link: "https://tw.news.yahoo.com/%E6%8F%9A%E5%90%8D%E6%B5%B7%E5%A4%96-%E6%97%A5%E6%9C%AC%E9%A3%9F%E8%82%B2%E7%95%8C%E7%A9%BA%E5%89%8D%E7%9B%9B%E4%BA%8B-%E5%8F%B0%E7%81%A3%E9%BB%91%E7%BF%85%E9%B3%B6%E5%B1%95%E7%8F%BE%E8%BE%B2%E6%9D%91%E5%86%8D%E7%94%9F%E5%97%A8%E7%88%86%E5%85%A8%E5%A0%B4-123534526.html",
+                        colorClass: "bg-red-100",
+                    }
+                ],
+                
+                links: {
+                    facebook: "https://www.facebook.com/LCFS2016?mibextid=LQQJ4d",
+                    instagram: "https://www.instagram.com/lcfs.fun?igshid=NTc4MTIwNjQ2YQ%3D%3D",
+                    associationWeb: "https://twfooducation.org/",
+                    associationFB: "https://www.facebook.com/twfooducation",
+                    media1: "https://doiiin.org/article/understanding-land-childs-view",
+                    media1Title: "翻轉教育：理解土地，是孩子觀看世界的濾鏡",
+                    media1Image: "https://images.unsplash.com/photo-1592419044706-39796d40f98c?q=80&w=600&auto=format&fit=crop", 
+                    media2: "https://www.hucc-coop.tw/article/realfood/22754",
+                    media2Title: "主婦聯盟：真正的食物，真實的教育",
+                    media2Image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?q=80&w=600&auto=format&fit=crop"
+                }
+            };
+
+            const copyEmail = () => {
+                navigator.clipboard.writeText(profile.email);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            return (
+                <div className="min-h-screen relative font-sans selection:bg-orange-500 selection:text-white text-zinc-900">
+                
+                {/* 背景圖層 */}
+                <div 
+                    className="fixed inset-0 z-0 pointer-events-none"
+                    style={{
+                        backgroundImage: `url(${bgImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        opacity: 0.08, 
+                    }}
+                ></div>
+
+                {/* 背景底色 */}
+                <div className="fixed inset-0 z-[-1] bg-orange-50"></div>
+
+                {/* 內容層 */}
+                <div className="relative z-10 p-4 md:p-8">
+                    
+                    {/* 頂部控制列 - 置中資訊 */}
+                    <div className="max-w-5xl mx-auto mb-8 flex justify-center">
+                        <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6 bg-white/50 backdrop-blur-sm p-3 rounded-full px-6 shadow-sm border border-white/20 text-sm md:text-base">
+                            
+                            {/* 地點 */}
+                            <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-orange-600" />
+                                <span className="opacity-80">{profile.location}</span>
+                            </div>
+                            
+                            {/* 分隔線 */}
+                            <div className="hidden md:block w-px h-4 bg-zinc-400 opacity-40"></div>
+                            
+                            {/* Email */}
+                            <button 
+                                onClick={copyEmail}
+                                className="flex items-center gap-2 group hover:text-orange-600 transition-colors"
+                            >
+                                <Mail className="w-4 h-4 opacity-60 group-hover:opacity-100" />
+                                <span className="font-bold tracking-wide">{profile.email}</span>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+                                </div>
+                            </button>
+                            
+                            {/* 分隔線 */}
+                            <div className="hidden md:block w-px h-4 bg-zinc-400 opacity-40"></div>
+                            
+                            {/* 電話 */}
+                            <div className="flex items-center gap-2">
+                                 <Phone className="w-4 h-4 text-orange-600" />
+                                 <span className="font-bold tracking-wide opacity-90">{profile.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bento Grid 主佈局 */}
+                    <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[minmax(90px,auto)]">
+                    
+                    {/* 1. 左側：主個人卡片 (2欄寬 x 6列高) */}
+                    <div className="col-span-1 md:col-span-2 md:row-span-6 p-0 rounded-3xl flex flex-col relative overflow-hidden group bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="w-full flex justify-center bg-gray-100">
+                            <img 
+                                src={avatarUrl} 
+                                alt={profile.name} 
+                                className="w-full h-auto object-cover max-w-[500px]" 
+                                style={{ minHeight: '300px' }}
+                            />
+                        </div>
+                        <div className="p-8 relative flex-1 flex flex-col">
+                            <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">{profile.name}</h1>
+                            <p className="text-lg font-medium mb-4 flex items-center gap-2 text-orange-600">
+                                <UtensilsCrossed className="w-5 h-5" />
+                                {profile.role}
+                            </p>
+                            <div className="mb-6 space-y-1.5">
+                                {profile.credentials.map((cred, index) => (
+                                <div key={index} className="flex items-center gap-2 text-sm md:text-base opacity-90 font-medium">
+                                    <Award className="w-4 h-4 text-orange-500 shrink-0" />
+                                    <span>{cred}</span>
+                                </div>
+                                ))}
+                            </div>
+                            <p className="opacity-70 leading-relaxed text-sm md:text-md mt-auto">
+                                {profile.bio}
+                            </p>
+                            <div className="absolute top-10 right-8 opacity-10">
+                                <Sprout className="w-24 h-24 rotate-12" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* --- 右側欄位堆疊 --- */}
+
+                    {/* 2. 小廚師 FB (1x1) */}
+                    <a href={profile.links.facebook} target="_blank" rel="noreferrer" className="col-span-1 md:col-span-1 md:row-span-1 bg-[#1877F2] text-white px-6 py-4 rounded-3xl flex items-center justify-between hover:opacity-90 transition-opacity cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                            <Facebook className="w-6 h-6 shrink-0" />
+                            <div className="overflow-hidden">
+                                <p className="text-[10px] opacity-80 uppercase tracking-wider font-bold leading-none mb-0.5 truncate">小廚師樂作坊</p>
+                                <p className="font-bold text-base leading-none">Facebook</p>
+                            </div>
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+
+                    {/* 3. 小廚師 IG (1x1) */}
+                    <a href={profile.links.instagram} target="_blank" rel="noreferrer" className="col-span-1 md:col-span-1 md:row-span-1 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white px-6 py-4 rounded-3xl flex items-center justify-between hover:opacity-90 transition-opacity cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                            <Instagram className="w-6 h-6 shrink-0" />
+                            <div className="overflow-hidden">
+                                <p className="text-[10px] opacity-80 uppercase tracking-wider font-bold leading-none mb-0.5 truncate">小廚師樂作坊</p>
+                                <p className="font-bold text-base leading-none">Instagram</p>
+                            </div>
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+
+                    {/* 4. 兒童食育協會 FB (2x1) */}
+                    <a href={profile.links.associationFB} target="_blank" rel="noreferrer" className="col-span-1 md:col-span-2 md:row-span-1 bg-[#4267B2] text-white px-6 py-4 rounded-3xl flex items-center justify-between hover:opacity-90 transition-opacity cursor-pointer group">
+                        <div className="flex items-center gap-3">
+                            <div className="relative shrink-0">
+                                <Facebook className="w-6 h-6" />
+                                <Users className="w-3 h-3 absolute -bottom-1 -right-1 bg-blue-600 rounded-full p-0.5" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] opacity-80 uppercase tracking-wider font-bold leading-none mb-0.5">Association</p>
+                                <p className="font-bold text-base leading-none">兒童食育協會 Facebook</p>
+                            </div>
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+
+                    {/* 5. 兒童食育協會官網 (2x1) - 橘色背景 */}
+                    <a href={profile.links.associationWeb} target="_blank" rel="noreferrer" className="col-span-1 md:col-span-2 md:row-span-1 px-6 py-4 rounded-3xl flex items-center justify-between group cursor-pointer bg-orange-500 text-white shadow-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="p-1.5 rounded-full bg-white/10 shrink-0">
+                                <Users className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] opacity-60 uppercase tracking-wider font-bold leading-none mb-0.5">Official Website</p>
+                                <p className="font-bold text-base leading-none">兒童食育協會 官網</p>
+                            </div>
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity text-white" />
+                    </a>
+
+                    {/* 6. 專業服務與規劃 (2x3) */}
+                    <div className="col-span-1 md:col-span-2 md:row-span-3 p-6 rounded-3xl flex flex-col justify-between bg-white shadow-sm relative overflow-hidden group">
+                        {/* 標題 */}
+                        <div className="flex items-center gap-3 shrink-0 relative z-10 mb-4">
+                            <div className="p-3 rounded-full bg-orange-100">
+                                <ListChecks className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <p className="text-xs opacity-50 font-bold uppercase tracking-wider">Services</p>
+                                <span className="font-bold text-xl">專業服務與規劃</span>
+                            </div>
+                        </div>
+                        
+                        {/* 列表內容 */}
+                        <div className="flex flex-col gap-3 relative z-10 flex-1 justify-center">
+                            {profile.services.map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-3 px-4 py-2 rounded-xl border border-orange-100 bg-orange-50/50 hover:scale-[1.02] transition-transform">
+                                <div className="w-2 h-2 rounded-full bg-orange-400 shrink-0"></div>
+                                <span className="text-base font-bold opacity-90">{item}</span>
+                            </div>
+                            ))}
+                        </div>
+
+                        {/* 裝飾 */}
+                        <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 rotate-12">
+                            <ChefHat className="w-40 h-40" />
+                        </div>
+                    </div>
+                    
+                    {/* 7. 媒體報導 (4x2) - 緊湊版型 */}
+                    <div className="col-span-1 md:col-span-4 md:row-span-2 p-0 rounded-3xl flex flex-col md:flex-row overflow-hidden shadow-sm h-[200px]">
+                        {/* 報導 1 */}
+                        <a href={profile.links.media1} target="_blank" rel="noreferrer" className="flex-1 relative group overflow-hidden cursor-pointer h-full border-r border-white/10">
+                            <img src={profile.links.media1Image} alt="Media 1" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                            <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Newspaper className="w-5 h-5 text-orange-400" />
+                                    <span className="text-sm font-bold tracking-wider text-orange-400">媒體報導 Media Report</span>
+                                </div>
+                                <div className="flex justify-between items-end gap-4">
+                                    <h3 className="font-bold text-xl leading-tight text-shadow">{profile.links.media1Title}</h3>
+                                    <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm group-hover:bg-white/30 transition-colors shrink-0">
+                                        <ArrowUpRight className="w-6 h-6" />
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        {/* 報導 2 */}
+                        <a href={profile.links.media2} target="_blank" rel="noreferrer" className="flex-1 relative group overflow-hidden cursor-pointer h-full">
+                            <img src={profile.links.media2Image} alt="Media 2" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                            <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Newspaper className="w-5 h-5 text-green-400" />
+                                    <span className="text-sm font-bold tracking-wider text-green-400">媒體報導 Media Report</span>
+                                </div>
+                                <div className="flex justify-between items-end gap-4">
+                                    <h3 className="font-bold text-xl leading-tight text-shadow">{profile.links.media2Title}</h3>
+                                    <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm group-hover:bg-white/30 transition-colors shrink-0">
+                                        <ArrowUpRight className="w-6 h-6" />
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    {/* 8. 精選案例 (4x Auto) - 色塊設計 */}
+                    <div className="col-span-1 md:col-span-4 p-8 rounded-3xl flex flex-col gap-6 bg-white shadow-sm relative overflow-hidden group">
+                        {/* 標題 */}
+                        <div className="flex items-center gap-3 shrink-0 relative z-10">
+                            <div className="p-3 rounded-full bg-yellow-100">
+                                <Lightbulb className="w-6 h-6 text-yellow-600" />
+                            </div>
+                            <div>
+                                <p className="text-xs opacity-50 font-bold uppercase tracking-wider">Highlights</p>
+                                <span className="font-bold text-xl md:text-2xl">精選案例 Case Studies</span>
+                            </div>
+                        </div>
+
+                        {/* 卡片容器 */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                            {profile.cases.map((item, idx) => (
+                            <a key={idx} href={item.link} target="_blank" rel="noreferrer" className={`group/card p-6 rounded-2xl h-full min-h-[160px] flex flex-col justify-between transition-all hover:scale-[1.02] hover:shadow-md ${item.colorClass}`}>
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-lg md:text-xl text-zinc-800 leading-tight mb-3 pr-2">{item.title}</h4>
+                                    <div className="p-1.5 rounded-full bg-white/30 shrink-0 opacity-50 group-hover/card:opacity-100 transition-opacity">
+                                        <ArrowUpRight className="w-5 h-5 text-zinc-700" />
+                                    </div>
+                                </div>
+                                <p className="text-sm text-zinc-600 leading-relaxed font-medium">
+                                    {item.desc}
+                                </p>
+                            </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-12 text-center opacity-40 text-sm">
+                        <p>© 2026 {profile.name}. All Rights Reserved.</p>
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
